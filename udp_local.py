@@ -1,12 +1,17 @@
 import socket
 import sys
+import time
 
 #create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 MAX = 65535
-PORT = 1060
+PORT = 4223
+
+# Bind the socket to a local address and port
+s.bind(('127.0.0.1', 0))
+
 if sys.argv[1:] == ['server']:
-    s.bind(('127.0.0.1', PORT))
+    # s.bind(('127.0.0.1', PORT))
     print('Listening at', s.getsockname())
     while True:
         data, address = s.recvfrom(MAX)
@@ -14,11 +19,15 @@ if sys.argv[1:] == ['server']:
         s.sendto(b'Your data was %d bytes' % len(data), address)
 elif sys.argv[1:] == ['client']:
     print('Address before sending:', s.getsockname())
-    s.sendto(b'This is my message', ('127.0.0.1', PORT))
+    message = b'This is my message'
+    server_address = ('127.0.0.1', PORT)
+    s.sendto(message, server_address)
     print('Address after sending', s.getsockname())
-    data, address = s.recvfrom(MAX) # overly promiscuous - see text!
+    time.sleep(3)
+    data, address = s.recvfrom(MAX)
     print('The server', address, 'says', repr(data))
 else:
     print(sys.stderr, 'usage: udp_local.py server|client')
 
-socket.close()
+# Close the socket
+s.close()
