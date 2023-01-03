@@ -20,3 +20,5 @@ elif sys.argv[1:] == ['client']:
     print('The server', address, 'says', repr(data))
 else:
     print(sys.stderr, 'usage: udp_local.py server|client')
+
+socket.close()
